@@ -20,7 +20,7 @@ Most variables either have defaults or inherit defaults from provider configurat
 | ct-disk | Container storage | object | {} | No |
 | ct-net-ifaces | Containers network interfaces | map | {} | No |
 | clone-target | The target container to clone | map | {} | No |
-| ct-os | The template to use for the container If set `ct-os-upload` will be ignored. | string | null | No |
+| ct-os | The template to use for the container If set `ct-os-upload` will be ignored | string | null | No |
 | ct-os-upload | Settings for uploading the OS template to use. Ignored if `ct-os` is set | object | {} | No |
 | ct-console | Console settings for the container | object | { enabled: true, type: "shell" } | No |
 | ct-init | Initialization settings for the container | object | {} | No |

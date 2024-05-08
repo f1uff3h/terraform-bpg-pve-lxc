@@ -12,7 +12,7 @@ resource "random_password" "ct_root_pw" {
 }
 
 resource "proxmox_virtual_environment_download_file" "ct_template" {
-  count = var.ct-os == null ? 1 : 0
+  count = var.ct-os-upload.source == null ? 0 : 1
 
   content_type        = "vztmpl"
   node_name           = var.ct-node
@@ -28,6 +28,13 @@ resource "proxmox_virtual_environment_download_file" "ct_template" {
 
   upload_timeout = var.ct-os-upload.timeout
   verify         = var.ct-os-upload.verify
+
+  lifecycle {
+    precondition {
+      condition     = var.ct-os == null
+      error_message = "Variables 'ct-os' and 'ct-os-upload' are mutually exclusive!"
+    }
+  }
 }
 
 resource "proxmox_virtual_environment_container" "ct" {
@@ -140,6 +147,10 @@ resource "proxmox_virtual_environment_container" "ct" {
     precondition {
       condition     = length(var.ct-dns) == 1 || length(var.ct-dns) == 0
       error_message = "Only one DNS block is allowed!"
+    }
+    precondition {
+      condition     = (var.ct-os == null && var.ct-os-upload.source != null) || (var.ct-os-upload.source == null && var.ct-os != null)
+      error_message = "Variables 'ct-os' and 'ct-os-upload' are mutually exclusive!"
     }
   }
 }
