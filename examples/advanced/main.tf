@@ -1,7 +1,20 @@
+terraform {
+  required_providers {
+    proxmox = {
+      source  = "bpg/proxmox"
+      version = "~>0"
+    }
+  }
+}
+
+provider "proxmox" {
+  insecure = true
+}
+
 module "ct_advanced" {
   source = "../../"
 
-  ct-node         = var.pve_node
+  ct-node         = "my-pve-node"
   ct-id           = 9999
   ct-unprivileged = false
   ct-pool         = "dev"

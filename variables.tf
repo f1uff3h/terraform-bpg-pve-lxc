@@ -199,8 +199,8 @@ variable "ct-fw" {
     })
     rules = map(object({
       enabled   = optional(bool)
-      action    = optional(string)
-      direction = optional(string)
+      action    = string
+      direction = string
       sourceip  = optional(string)
       destip    = optional(string)
       sport     = optional(string)
@@ -211,7 +211,6 @@ variable "ct-fw" {
     }))
   })
   description = "Firewall settings for the container."
-  nullable    = true
   default = {
     options = {}
     rules   = {}

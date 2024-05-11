@@ -92,7 +92,7 @@ resource "proxmox_virtual_environment_container" "ct" {
   }
 
   operating_system {
-    template_file_id = coalesce(var.ct-os, proxmox_virtual_environment_download_file.ct_template[0].id)
+    template_file_id = try(var.ct-os, proxmox_virtual_environment_download_file.ct_template[0].id)
   }
 
   console {
@@ -183,17 +183,16 @@ resource "proxmox_virtual_environment_firewall_rules" "ct_fw_rules" {
     for_each = var.ct-fw.rules
 
     content {
-      enabled = rule.value["enabled"]
-      action  = rule.value["action"]
-      type    = rule.value["direction"]
-      source  = rule.value["sourceip"]
-      dest    = rule.value["destip"]
-      sport   = rule.value["sport"]
-      dport   = rule.value["dport"]
-      proto   = rule.value["proto"]
-      log     = rule.value["log"]
-      comment = format("%s %s", rule.value["comment"], "; Managed by Terraform")
-
+      enabled = rule.value.enabled
+      action  = rule.value.action
+      type    = rule.value.direction
+      source  = rule.value.sourceip
+      dest    = rule.value.destip
+      sport   = rule.value.sport
+      dport   = rule.value.dport
+      proto   = rule.value.proto
+      log     = rule.value.log
+      comment = "${rule.value.comment}; Managed by Terraform"
     }
   }
 }

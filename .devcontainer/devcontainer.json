@@ -6,7 +6,7 @@
     "source=${env:HOME}/.bash_history,target=/home/user/.bash_history,type=bind,consistency=consistent"
   ],
   "name": "terraform-dev",
-  "postAttachCommand": "terraform version",
+  "postAttachCommand": "chown -R 1000:1000 /workspace && choown -R 1000:1000 /root/.ssh && terraform version",
   "customizations": {
     "vscode": {
       "extensions": [
