@@ -49,25 +49,28 @@ module "ct_advanced" {
     }
   }
   ct-fw = {
-    options = {
-      enabled = true
+    enabled = true
+  }
+  ct-fw-rules = {
+    HTTP = {
+      enabled   = true
+      direction = "in"
+      action    = "ACCEPT"
+      dport     = "80"
+      proto     = "tcp"
+      log       = "info"
+      comment   = "Allow HTTP traffic"
     }
-    rules = {
-      HTTP = {
-        enabled   = true
-        direction = "in"
-        action    = "ACCEPT"
-        dport     = "80"
-        proto     = "tcp"
-        log       = "info"
-        comment   = "Allow HTTP traffic"
-      }
+  }
+  ct-fw-fsg = {
+    ldapserver = {
+      enabled = true
     }
   }
   ct-os-upload = {
-    datastore = "iso"
-    source    = "https://jenkins.linuxcontainers.org/view/Images/job/image-debian/architecture=amd64,release=bookworm,variant=default/lastSuccessfulBuild/artifact/rootfs.tar.xz"
-    file_name = "debian-bookworm-amd64-20240507.tar.xz"
+    datastore = "local"
+    source    = "https://jenkins.linuxcontainers.org/view/Images/job/image-alpine/architecture=amd64,release=3.19,variant=default/lastSuccessfulBuild/artifact/rootfs.tar.xz"
+    file_name = "mycontainer.tar.xz"
   }
   ct-init = {
     hostname = "ct-advanced"

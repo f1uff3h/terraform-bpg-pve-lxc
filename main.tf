@@ -1,7 +1,8 @@
 terraform {
   required_providers {
     proxmox = {
-      source = "bpg/proxmox"
+      source  = "bpg/proxmox"
+      version = ">= 0.55"
     }
   }
 }
@@ -92,7 +93,7 @@ resource "proxmox_virtual_environment_container" "ct" {
   }
 
   operating_system {
-    template_file_id = try(var.ct-os, proxmox_virtual_environment_download_file.ct_template[0].id)
+    template_file_id = var.ct-os != null ? var.ct-os : proxmox_virtual_environment_download_file.ct_template[0].id
   }
 
   console {
@@ -156,31 +157,31 @@ resource "proxmox_virtual_environment_container" "ct" {
 }
 
 resource "proxmox_virtual_environment_firewall_options" "ct_fw_opts" {
-  count = length(var.ct-fw.options) > 0 ? 0 : 1
+  count = length(var.ct-fw) > 0 ? 0 : 1
 
   node_name    = proxmox_virtual_environment_container.ct.node_name
   container_id = proxmox_virtual_environment_container.ct.vm_id
 
-  enabled       = var.ct-fw.options.enabled
-  dhcp          = var.ct-fw.options.dhcp
-  input_policy  = var.ct-fw.options.input_policy
-  output_policy = var.ct-fw.options.output_policy
-  log_level_in  = try(var.ct-fw.options.log_level_in, "nolog")
-  log_level_out = try(var.ct-fw.options.log_level_out, "nolog")
-  macfilter     = var.ct-fw.options.macfilter
-  ipfilter      = var.ct-fw.options.ipfilter
-  ndp           = var.ct-fw.options.ndp
-  radv          = var.ct-fw.options.radv
+  enabled       = var.ct-fw.enabled
+  dhcp          = var.ct-fw.dhcp
+  input_policy  = var.ct-fw.input_policy
+  output_policy = var.ct-fw.output_policy
+  log_level_in  = try(var.ct-fw.log_level_in, "nolog")
+  log_level_out = try(var.ct-fw.log_level_out, "nolog")
+  macfilter     = var.ct-fw.macfilter
+  ipfilter      = var.ct-fw.ipfilter
+  ndp           = var.ct-fw.ndp
+  radv          = var.ct-fw.radv
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "ct_fw_rules" {
-  count = length(var.ct-fw.rules) > 0 ? 1 : 0
+  count = length(var.ct-fw-rules) > 0 || length(var.ct-fw-fsg) > 0 ? 1 : 0
 
   node_name    = proxmox_virtual_environment_container.ct.node_name
   container_id = proxmox_virtual_environment_container.ct.vm_id
 
   dynamic "rule" {
-    for_each = var.ct-fw.rules
+    for_each = var.ct-fw-rules
 
     content {
       enabled = rule.value.enabled
@@ -192,7 +193,18 @@ resource "proxmox_virtual_environment_firewall_rules" "ct_fw_rules" {
       dport   = rule.value.dport
       proto   = rule.value.proto
       log     = rule.value.log
-      comment = "${rule.value.comment}; Managed by Terraform"
+      comment = "${rule.value.comment == null ? "" : rule.value.comment}; Managed by Terraform"
+    }
+  }
+
+  dynamic "rule" {
+    for_each = var.ct-fw-fsg
+
+    content {
+      enabled        = rule.value.enabled
+      security_group = rule.key
+      iface          = rule.value.iface
+      comment        = "${rule.value.comment == null ? "" : rule.value.comment}; Managed by Terraform"
     }
   }
 }

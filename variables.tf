@@ -185,34 +185,44 @@ variable "ct-template" {
 
 variable "ct-fw" {
   type = object({
-    options = object({
-      enabled       = optional(bool)
-      dhcp          = optional(bool)
-      input_policy  = optional(string)
-      output_policy = optional(string)
-      log_level_in  = optional(string)
-      log_level_out = optional(string)
-      macfilter     = optional(bool)
-      ipfilter      = optional(bool)
-      ndp           = optional(bool)
-      radv          = optional(bool)
-    })
-    rules = map(object({
-      enabled   = optional(bool)
-      action    = string
-      direction = string
-      sourceip  = optional(string)
-      destip    = optional(string)
-      sport     = optional(string)
-      dport     = optional(string)
-      proto     = optional(string)
-      log       = optional(string)
-      comment   = optional(string)
-    }))
+    enabled       = optional(bool)
+    dhcp          = optional(bool)
+    input_policy  = optional(string)
+    output_policy = optional(string)
+    log_level_in  = optional(string)
+    log_level_out = optional(string)
+    macfilter     = optional(bool)
+    ipfilter      = optional(bool)
+    ndp           = optional(bool)
+    radv          = optional(bool)
   })
   description = "Firewall settings for the container."
-  default = {
-    options = {}
-    rules   = {}
-  }
+  default     = {}
+}
+
+variable "ct-fw-rules" {
+  type = map(object({
+    enabled   = optional(bool)
+    action    = string
+    direction = string
+    sourceip  = optional(string)
+    destip    = optional(string)
+    sport     = optional(string)
+    dport     = optional(string)
+    proto     = optional(string)
+    log       = optional(string)
+    comment   = optional(string)
+  }))
+  description = "Firewall rules for the container."
+  default     = {}
+}
+
+variable "ct-fw-fsg" {
+  type = map(object({
+    enabled = optional(bool)
+    iface   = optional(string)
+    comment = optional(string)
+  }))
+  description = "Firewall rules that import from a security group."
+  default     = {}
 }
