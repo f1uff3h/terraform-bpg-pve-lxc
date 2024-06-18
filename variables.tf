@@ -107,6 +107,12 @@ variable "ct-os" {
   default     = null
 }
 
+variable "ct-os-type" {
+  type        = string
+  description = "The type of the OS template. Unmanaged means PVE won't manage the container (e.g. static IPs don't get auto assigned)"
+  default     = "unmanaged"
+}
+
 variable "ct-os-upload" {
   type = object({
     datastore           = optional(string)
@@ -149,12 +155,12 @@ variable "ct-init" {
 }
 
 variable "ct-dns" {
-  type = map(object({
+  type = object({
     domain  = optional(string)
     servers = optional(list(string))
-  }))
+  })
   description = "DNS settings for the container. Map should contain maximum 1 object. Defined as map because empty dns block triggers a provider error."
-  default     = {}
+  default     = null
 }
 
 variable "ct-tags" {

@@ -1,0 +1,40 @@
+FROM docker.io/library/rust:latest as r
+
+RUN apt-get update && \
+  apt-get upgrade -y && \
+  apt-get install --no-install-recommends -y cmake && \
+  cargo install nu starship fd-find ripgrep zoxide
+
+FROM docker.io/library/golang:latest as g
+
+RUN go install github.com/jesseduffield/lazygit@latest && \
+  go install github.com/junegunn/fzf@latest
+
+FROM debian:12-slim
+
+COPY --from=r /usr/local/cargo/bin/* /usr/local/bin/
+COPY --from=g /go/bin/* /usr/local/bin/
+
+RUN apt-get update && \
+  apt-get upgrade -y && \
+  apt-get install -y curl wget gpg git python3 pipx make cmake gettext npm && \
+  git clone https://github.com/neovim/neovim && \
+  cd neovim && \
+  make CMAKE_BUILD_TYPE=RelWithDebInfo && \
+  make install && \
+  git clone https://github.com/LazyVim/starter ~/.config/nvim && \
+  rm -rf ~/.config/nvim/.git
+
+RUN wget -O- --progress=dot:giga https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
+  echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com bookworm main" | tee /etc/apt/sources.list.d/hashicorp.list && \
+  apt-get update && \
+  apt-get install --no-install-recommends -y terraform unzip && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
+
+COPY ./src/nushell/*.nu /root/.config/nushell/
+COPY ./src/nvim/init.lua /root/.config/nvim/
+COPY ./src/nvim/lua/config/* /root/.config/nvim/lua/config/
+COPY ./src/nvim/lua/plugins/* /root/.config/nvim/lua/plugins/
+
+WORKDIR /workspace

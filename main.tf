@@ -94,6 +94,7 @@ resource "proxmox_virtual_environment_container" "ct" {
 
   operating_system {
     template_file_id = var.ct-os != null ? var.ct-os : proxmox_virtual_environment_download_file.ct_template[0].id
+    type             = var.ct-os-type
   }
 
   console {
@@ -105,10 +106,11 @@ resource "proxmox_virtual_environment_container" "ct" {
   initialization {
     hostname = var.ct-init.hostname
     dynamic "dns" {
-      for_each = var.ct-dns
+      for_each = var.ct-dns != null ? [1] : []
+
       content {
-        domain  = dns.value.domain
-        servers = dns.value.servers
+        domain  = var.ct-dns.domain
+        servers = var.ct-dns.servers
       }
     }
     dynamic "ip_config" {
@@ -145,10 +147,6 @@ resource "proxmox_virtual_environment_container" "ct" {
   tags     = var.ct-tags
 
   lifecycle {
-    precondition {
-      condition     = length(var.ct-dns) == 1 || length(var.ct-dns) == 0
-      error_message = "Only one DNS block is allowed!"
-    }
     precondition {
       condition     = (var.ct-os == null && var.ct-os-upload.source != null) || (var.ct-os-upload.source == null && var.ct-os != null)
       error_message = "Variables 'ct-os' and 'ct-os-upload' are mutually exclusive!"
