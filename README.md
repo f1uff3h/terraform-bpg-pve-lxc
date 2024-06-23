@@ -1,7 +1,9 @@
 # terraform-bpg-pve-lxc
+
 Based on [bpg's provider](https://github.com/bpg/terraform-provider-proxmox)
 
 ## Create an LXC container on PVE using Terraform
+
 This module deploys an LXC container on ProxmoxVE host, with optional firewall configuration and LXC template download from URL.
 Most variables either have defaults or inherit defaults from provider configuration. For a quick deployment only `ct-node` and `ct-os` are required.
 
@@ -24,8 +26,11 @@ Most variables either have defaults or inherit defaults from provider configurat
 | ct-os-upload | Settings for uploading the OS template to use. Ignored if `ct-os` is set | object | {} | No |
 | ct-console | Console settings for the container | object | { enabled: true, type: "shell" } | No |
 | ct-init | Initialization settings for the container | object | {} | No |
-| ct-dns | DNS settings for the container | map | {} | No |
+| ct-dns | DNS settings for the container | object | null | No |
 | ct-tags | The tags to apply to the container | list | [] | No |
 | ct-features | Features to enable for the container. Requires root account for anything other than nesting | object | { nesting: true } | No |
 | ct-template | Whether the container is a template | bool | false | No |
 | ct-fw | Firewall settings and firewall rules for the container | object | { options: {}, rules: {} } | No |
+| ct-fw-fsg | Firewall rules that import from a security group | map(object) | {} | No |
+| ct-ssh-privkey | File containing ssh private key to be used for container bootstrap | string | null | No |
+| ct-bootstrap-script | Path to script file ro run on container creation | string | null | No |

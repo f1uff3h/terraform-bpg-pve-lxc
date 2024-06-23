@@ -17,7 +17,7 @@ COPY --from=g /go/bin/* /usr/local/bin/
 
 RUN apt-get update && \
   apt-get upgrade -y && \
-  apt-get install -y curl wget gpg git python3 pipx make cmake gettext npm && \
+  apt-get install -y curl wget gpg git make cmake gettext npm && \
   git clone https://github.com/neovim/neovim && \
   cd neovim && \
   make CMAKE_BUILD_TYPE=RelWithDebInfo && \

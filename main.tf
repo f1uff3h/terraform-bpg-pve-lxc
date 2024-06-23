@@ -1,8 +1,17 @@
 terraform {
+  required_version = ">= 1.4"
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
       version = ">= 0.55"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0"
     }
   }
 }
@@ -205,4 +214,37 @@ resource "proxmox_virtual_environment_firewall_rules" "ct_fw_rules" {
       comment        = "${rule.value.comment == null ? "" : rule.value.comment}; Managed by Terraform"
     }
   }
+}
+
+resource "time_sleep" "wait_for_ct" {
+  count           = var.ct-bootstrap-script == null ? 0 : 1
+  create_duration = "10s"
+  triggers = {
+    vmid = proxmox_virtual_environment_container.ct.vm_id
+  }
+  depends_on = [
+    proxmox_virtual_environment_container.ct
+  ]
+}
+
+resource "terraform_data" "bootstrap_ct" {
+  count = var.ct-bootstrap-script == null ? 0 : 1
+
+  connection {
+    type        = "ssh"
+    host        = replace(proxmox_virtual_environment_container.ct.initialization[0].ip_config[0].ipv4[0].address, "/24", "")
+    user        = "root"
+    private_key = file(var.ct-ssh-privkey)
+  }
+  provisioner "remote-exec" {
+    script = var.ct-bootstrap-script
+  }
+
+  triggers_replace = [
+    time_sleep.wait_for_ct[0].id
+  ]
+
+  depends_on = [
+    time_sleep.wait_for_ct
+  ]
 }

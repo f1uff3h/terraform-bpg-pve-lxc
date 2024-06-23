@@ -232,3 +232,15 @@ variable "ct-fw-fsg" {
   description = "Firewall rules that import from a security group."
   default     = {}
 }
+
+variable "ct-ssh-privkey" {
+  type        = string
+  description = "File containing ssh private key to be used for container bootstrap."
+  default     = null
+}
+
+variable "ct-bootstrap-script" {
+  type        = string
+  description = "Path to script file ro run on container creation."
+  default     = null
+}
