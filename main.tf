@@ -136,7 +136,7 @@ resource "proxmox_virtual_environment_container" "ct" {
       }
     }
     user_account {
-      password = coalesce(var.ct-init.root_pw, random_password.ct_root_pw[0].result)
+      password = var.ct-init.root_pw != null ? var.ct-init.root_pw : random_password.ct_root_pw[0].result
       keys     = var.ct-init.root_keys
     }
   }
