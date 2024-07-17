@@ -11,10 +11,9 @@ Most variables either have defaults or inherit defaults from provider configurat
 
 | NAME | Description | Type | Default | Required |
 | --- | --- | --- | --- | --- |
-| ct-root-pw | The root password for the container's root account. If unset a random password will be generated | string | null | No |
 | ct-node | The node on which to create the container | string | - | Yes |
 | ct-pool | The pool in which to create the container | string | null | No |
-| ct-start | Settings related to container startup/shutdown | object | { on-deploy: true, on-boot: false } | No |
+| ct-start | Settings related to container startup/shutdown | object | { on-deploy: true, on-boot: false, order: 0, up-delay: 0, down-delay: 0 } | No |
 | ct-unprivileged | Whether the container should be unprivileged | bool | true | No |
 | ct-id | The ID of the container | number | null | No |
 | ct-cpu | Container CPU configuration | object | {} | No |

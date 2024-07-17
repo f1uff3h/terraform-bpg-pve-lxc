@@ -17,7 +17,7 @@ terraform {
 }
 
 resource "random_password" "ct_root_pw" {
-  count  = var.ct-root-pw == null ? 1 : 0
+  count  = var.ct-init.root_pw == null ? 1 : 0
   length = 26
 }
 
