@@ -1,9 +1,3 @@
-variable "ct-root-pw" {
-  type        = string
-  description = "The root password for the container's root account."
-  default     = null
-}
-
 variable "ct-node" {
   type        = string
   description = "The node on which to create the container."
@@ -26,8 +20,11 @@ variable "ct-start" {
   })
   description = "The start settings for the container."
   default = {
-    on-deploy = true
-    on-boot   = false
+    on-deploy  = true
+    on-boot    = false
+    order      = 0
+    up-delay   = 0
+    down-delay = 0
   }
 }
 
