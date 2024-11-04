@@ -28,6 +28,12 @@ variable "ct-start" {
   }
 }
 
+variable "ct-protection" {
+  type        = bool
+  description = "Whether protection is enabled on the container."
+  default     = false
+}
+
 variable "ct-unprivileged" {
   type        = bool
   description = "Whether the container should be unprivileged."

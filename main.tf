@@ -3,7 +3,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = ">= 0.55"
+      version = ">= 0.66"
     }
     random = {
       source  = "hashicorp/random"
@@ -53,6 +53,7 @@ resource "proxmox_virtual_environment_container" "ct" {
   pool_id       = var.ct-pool
   started       = var.ct-start.on-deploy
   start_on_boot = var.ct-start.on-boot
+  protection    = var.ct-protection
 
   startup {
     order      = var.ct-start.order

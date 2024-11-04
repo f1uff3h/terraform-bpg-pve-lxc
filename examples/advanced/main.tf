@@ -18,6 +18,7 @@ module "ct_advanced" {
   ct-id           = 9999
   ct-unprivileged = false
   ct-pool         = "dev"
+  ct-protection   = true
 
   ct-start = {
     on-deploy  = true
