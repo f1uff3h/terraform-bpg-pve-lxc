@@ -21,3 +21,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Fixed root password field in `main.tf` to work when `random_password` is not created.
+
+## [0.2.3] - 2024-11-04
+
+### Added
+
+- `ct-protection` variable to allow for setting of protection mode
+
+### Changed
+
+- updated min required provider version
+
+## [0.2.4] - 2024-11-09
+
+### Fixed
+
+- fixed bug in firewall option where firewall options would not be applied if set and would be applied if unset

@@ -165,7 +165,7 @@ resource "proxmox_virtual_environment_container" "ct" {
 }
 
 resource "proxmox_virtual_environment_firewall_options" "ct_fw_opts" {
-  count = length(var.ct-fw) > 0 ? 0 : 1
+  count = length(var.ct-fw) > 0 ? 1 : 0
 
   node_name    = proxmox_virtual_environment_container.ct.node_name
   container_id = proxmox_virtual_environment_container.ct.vm_id
