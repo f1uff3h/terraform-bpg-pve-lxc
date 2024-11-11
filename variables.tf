@@ -1,52 +1,52 @@
-variable "ct-node" {
+variable "ct_node" {
   type        = string
   description = "The node on which to create the container."
 }
 
-variable "ct-pool" {
+variable "ct_pool" {
   type        = string
   description = "The pool in which to create the container."
   nullable    = true
   default     = null
 }
 
-variable "ct-start" {
+variable "ct_start" {
   type = object({
-    on-deploy  = bool
-    on-boot    = bool
+    on_deploy  = bool
+    on_boot    = bool
     order      = optional(number)
-    up-delay   = optional(number)
-    down-delay = optional(number)
+    up_delay   = optional(number)
+    down_delay = optional(number)
   })
   description = "The start settings for the container."
   default = {
-    on-deploy  = true
-    on-boot    = false
+    on_deploy  = true
+    on_boot    = false
     order      = 0
-    up-delay   = 0
-    down-delay = 0
+    up_delay   = 0
+    down_delay = 0
   }
 }
 
-variable "ct-protection" {
+variable "ct_protection" {
   type        = bool
   description = "Whether protection is enabled on the container."
   default     = false
 }
 
-variable "ct-unprivileged" {
+variable "ct_unprivileged" {
   type        = bool
   description = "Whether the container should be unprivileged."
   default     = true
 }
 
-variable "ct-id" {
+variable "ct_id" {
   type        = number
   description = "The ID of the container."
   default     = null
 }
 
-variable "ct-cpu" {
+variable "ct_cpu" {
   type = object({
     arch  = optional(string)
     cores = optional(number)
@@ -56,7 +56,7 @@ variable "ct-cpu" {
   default     = {}
 }
 
-variable "ct-mem" {
+variable "ct_mem" {
   type = object({
     dedicated = optional(number)
     swap      = optional(number)
@@ -65,7 +65,7 @@ variable "ct-mem" {
   default     = {}
 }
 
-variable "ct-disk" {
+variable "ct_disk" {
   type = object({
     datastore = optional(string)
     size      = optional(number)
@@ -74,7 +74,7 @@ variable "ct-disk" {
   default     = {}
 }
 
-variable "ct-net-ifaces" {
+variable "ct_net_ifaces" {
   type = map(object({
     name        = optional(string)
     bridge      = optional(string)
@@ -93,7 +93,7 @@ variable "ct-net-ifaces" {
   default     = {}
 }
 
-variable "clone-target" {
+variable "clone_target" {
   type = map(object({
     vm_id        = optional(string)
     node_name    = optional(string)
@@ -104,19 +104,19 @@ variable "clone-target" {
   default     = {}
 }
 
-variable "ct-os" {
+variable "ct_os" {
   type        = string
   description = "The template to use for the container."
   default     = null
 }
 
-variable "ct-os-type" {
+variable "ct_os_type" {
   type        = string
   description = "The type of the OS template. Unmanaged means PVE won't manage the container (e.g. static IPs don't get auto assigned)"
   default     = "unmanaged"
 }
 
-variable "ct-os-upload" {
+variable "ct_os_upload" {
   type = object({
     datastore           = optional(string)
     source              = optional(string)
@@ -133,7 +133,7 @@ variable "ct-os-upload" {
   default     = {}
 }
 
-variable "ct-console" {
+variable "ct_console" {
   type = object({
     enabled   = optional(bool)
     type      = optional(string)
@@ -147,7 +147,7 @@ variable "ct-console" {
   }
 }
 
-variable "ct-init" {
+variable "ct_init" {
   type = object({
     hostname  = optional(string)
     root_pw   = optional(string)
@@ -157,7 +157,7 @@ variable "ct-init" {
   default     = {}
 }
 
-variable "ct-dns" {
+variable "ct_dns" {
   type = object({
     domain  = optional(string)
     servers = optional(list(string))
@@ -166,13 +166,13 @@ variable "ct-dns" {
   default     = null
 }
 
-variable "ct-tags" {
+variable "ct_tags" {
   type        = list(string)
   description = "The tags to apply to the container."
   default     = []
 }
 
-variable "ct-features" {
+variable "ct_features" {
   type = object({
     nesting = optional(bool)
     fuse    = optional(bool)
@@ -186,13 +186,13 @@ variable "ct-features" {
   }
 }
 
-variable "ct-template" {
+variable "ct_template" {
   type        = bool
   description = "Whether the container is a template."
   default     = false
 }
 
-variable "ct-fw" {
+variable "ct_fw" {
   type = object({
     enabled       = optional(bool)
     dhcp          = optional(bool)
@@ -209,7 +209,7 @@ variable "ct-fw" {
   default     = {}
 }
 
-variable "ct-fw-rules" {
+variable "ct_fw_rules" {
   type = map(object({
     enabled   = optional(bool)
     action    = string
@@ -226,7 +226,7 @@ variable "ct-fw-rules" {
   default     = {}
 }
 
-variable "ct-fw-fsg" {
+variable "ct_fw_fsg" {
   type = map(object({
     enabled = optional(bool)
     iface   = optional(string)
@@ -236,13 +236,13 @@ variable "ct-fw-fsg" {
   default     = {}
 }
 
-variable "ct-ssh-privkey" {
+variable "ct_ssh_privkey" {
   type        = string
   description = "File containing ssh private key to be used for container bootstrap."
   default     = null
 }
 
-variable "ct-bootstrap-script" {
+variable "ct_bootstrap_script" {
   type        = string
   description = "Path to script file ro run on container creation."
   default     = null

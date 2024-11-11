@@ -37,3 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - fixed bug in firewall option where firewall options would not be applied if set and would be applied if unset
+
+## [0.3.0] - 2024-11-11
+
+### Changed
+
+- **BREAKING**: all variables now conform to HCL canonical form
+
+### Updated
+
+- Added precondition to `bootstrap_ct` to check for ssh private key presence

@@ -17,70 +17,70 @@ terraform {
 }
 
 resource "random_password" "ct_root_pw" {
-  count  = var.ct-init.root_pw == null ? 1 : 0
+  count  = var.ct_init.root_pw == null ? 1 : 0
   length = 26
 }
 
 resource "proxmox_virtual_environment_download_file" "ct_template" {
-  count = var.ct-os-upload.source == null ? 0 : 1
+  count = var.ct_os_upload.source == null ? 0 : 1
 
   content_type        = "vztmpl"
-  node_name           = var.ct-node
-  datastore_id        = var.ct-os-upload.datastore
-  url                 = var.ct-os-upload.source
-  file_name           = var.ct-os-upload.file_name
-  overwrite           = var.ct-os-upload.overwrite
-  overwrite_unmanaged = var.ct-os-upload.overwrite_unmanaged
+  node_name           = var.ct_node
+  datastore_id        = var.ct_os_upload.datastore
+  url                 = var.ct_os_upload.source
+  file_name           = var.ct_os_upload.file_name
+  overwrite           = var.ct_os_upload.overwrite
+  overwrite_unmanaged = var.ct_os_upload.overwrite_unmanaged
 
-  checksum                = var.ct-os-upload.checksum
-  checksum_algorithm      = var.ct-os-upload.checksum_alg
-  decompression_algorithm = var.ct-os-upload.decomp_alg
+  checksum                = var.ct_os_upload.checksum
+  checksum_algorithm      = var.ct_os_upload.checksum_alg
+  decompression_algorithm = var.ct_os_upload.decomp_alg
 
-  upload_timeout = var.ct-os-upload.timeout
-  verify         = var.ct-os-upload.verify
+  upload_timeout = var.ct_os_upload.timeout
+  verify         = var.ct_os_upload.verify
 
   lifecycle {
     precondition {
-      condition     = var.ct-os == null
-      error_message = "Variables 'ct-os' and 'ct-os-upload' are mutually exclusive!"
+      condition     = var.ct_os == null
+      error_message = "Variables 'ct_os' and 'ct_os_upload' are mutually exclusive!"
     }
   }
 }
 
 resource "proxmox_virtual_environment_container" "ct" {
   description   = "Managed by Terraform"
-  node_name     = var.ct-node
-  pool_id       = var.ct-pool
-  started       = var.ct-start.on-deploy
-  start_on_boot = var.ct-start.on-boot
-  protection    = var.ct-protection
+  node_name     = var.ct_node
+  pool_id       = var.ct_pool
+  started       = var.ct_start.on-deploy
+  start_on_boot = var.ct_start.on-boot
+  protection    = var.ct_protection
 
   startup {
-    order      = var.ct-start.order
-    up_delay   = var.ct-start.up-delay
-    down_delay = var.ct-start.down-delay
+    order      = var.ct_start.order
+    up_delay   = var.ct_start.up-delay
+    down_delay = var.ct_start.down-delay
   }
-  unprivileged = var.ct-unprivileged
-  vm_id        = var.ct-id
+  unprivileged = var.ct_unprivileged
+  vm_id        = var.ct_id
 
   cpu {
-    architecture = var.ct-cpu.arch
-    cores        = var.ct-cpu.cores
-    units        = var.ct-cpu.units
+    architecture = var.ct_cpu.arch
+    cores        = var.ct_cpu.cores
+    units        = var.ct_cpu.units
   }
 
   memory {
-    dedicated = var.ct-mem.dedicated
-    swap      = var.ct-mem.swap
+    dedicated = var.ct_mem.dedicated
+    swap      = var.ct_mem.swap
   }
 
   disk {
-    datastore_id = var.ct-disk.datastore
-    size         = var.ct-disk.size
+    datastore_id = var.ct_disk.datastore
+    size         = var.ct_disk.size
   }
 
   dynamic "network_interface" {
-    for_each = var.ct-net-ifaces
+    for_each = var.ct_net_ifaces
     content {
       name        = network_interface.value.name
       bridge      = network_interface.value.bridge
@@ -94,7 +94,7 @@ resource "proxmox_virtual_environment_container" "ct" {
   }
 
   dynamic "clone" {
-    for_each = var.clone-target
+    for_each = var.clone_target
     content {
       vm_id        = clone.value.vm_id
       node_name    = clone.value.node_name
@@ -103,28 +103,28 @@ resource "proxmox_virtual_environment_container" "ct" {
   }
 
   operating_system {
-    template_file_id = var.ct-os != null ? var.ct-os : proxmox_virtual_environment_download_file.ct_template[0].id
-    type             = var.ct-os-type
+    template_file_id = var.ct_os != null ? var.ct_os : proxmox_virtual_environment_download_file.ct_template[0].id
+    type             = var.ct_os-type
   }
 
   console {
-    enabled   = var.ct-console.enabled
-    type      = var.ct-console.type
-    tty_count = var.ct-console.tty_count
+    enabled   = var.ct_console.enabled
+    type      = var.ct_console.type
+    tty_count = var.ct_console.tty_count
   }
 
   initialization {
-    hostname = var.ct-init.hostname
+    hostname = var.ct_init.hostname
     dynamic "dns" {
-      for_each = var.ct-dns != null ? [1] : []
+      for_each = var.ct_dns != null ? [1] : []
 
       content {
-        domain  = var.ct-dns.domain
-        servers = var.ct-dns.servers
+        domain  = var.ct_dns.domain
+        servers = var.ct_dns.servers
       }
     }
     dynamic "ip_config" {
-      for_each = var.ct-net-ifaces
+      for_each = var.ct_net-ifaces
       content {
         ipv4 {
           address = ip_config.value.ipv4_addr
@@ -137,59 +137,59 @@ resource "proxmox_virtual_environment_container" "ct" {
       }
     }
     user_account {
-      password = var.ct-init.root_pw != null ? var.ct-init.root_pw : random_password.ct_root_pw[0].result
-      keys     = var.ct-init.root_keys
+      password = var.ct_init.root_pw != null ? var.ct_init.root_pw : random_password.ct_root_pw[0].result
+      keys     = var.ct_init.root_keys
     }
   }
 
   dynamic "features" {
-    for_each = var.ct-features != null ? [1] : []
+    for_each = var.ct_features != null ? [1] : []
 
     content {
-      nesting = try(var.ct-features.nesting, true)
-      fuse    = var.ct-features.fuse
-      keyctl  = var.ct-features.keyctl
-      mount   = var.ct-features.mount
+      nesting = try(var.ct_features.nesting, true)
+      fuse    = var.ct_features.fuse
+      keyctl  = var.ct_features.keyctl
+      mount   = var.ct_features.mount
     }
   }
 
-  template = var.ct-template
-  tags     = var.ct-tags
+  template = var.ct_template
+  tags     = var.ct_tags
 
   lifecycle {
     precondition {
-      condition     = (var.ct-os == null && var.ct-os-upload.source != null) || (var.ct-os-upload.source == null && var.ct-os != null)
-      error_message = "Variables 'ct-os' and 'ct-os-upload' are mutually exclusive!"
+      condition     = (var.ct_os == null && var.ct_os_upload.source != null) || (var.ct_os_upload.source == null && var.ct_os != null)
+      error_message = "Variables 'ct_os' and 'ct_os_upload' are mutually exclusive!"
     }
   }
 }
 
 resource "proxmox_virtual_environment_firewall_options" "ct_fw_opts" {
-  count = length(var.ct-fw) > 0 ? 1 : 0
+  count = length(var.ct_fw) > 0 ? 1 : 0
 
   node_name    = proxmox_virtual_environment_container.ct.node_name
   container_id = proxmox_virtual_environment_container.ct.vm_id
 
-  enabled       = var.ct-fw.enabled
-  dhcp          = var.ct-fw.dhcp
-  input_policy  = var.ct-fw.input_policy
-  output_policy = var.ct-fw.output_policy
-  log_level_in  = try(var.ct-fw.log_level_in, "nolog")
-  log_level_out = try(var.ct-fw.log_level_out, "nolog")
-  macfilter     = var.ct-fw.macfilter
-  ipfilter      = var.ct-fw.ipfilter
-  ndp           = var.ct-fw.ndp
-  radv          = var.ct-fw.radv
+  enabled       = var.ct_fw.enabled
+  dhcp          = var.ct_fw.dhcp
+  input_policy  = var.ct_fw.input_policy
+  output_policy = var.ct_fw.output_policy
+  log_level_in  = try(var.ct_fw.log_level_in, "nolog")
+  log_level_out = try(var.ct_fw.log_level_out, "nolog")
+  macfilter     = var.ct_fw.macfilter
+  ipfilter      = var.ct_fw.ipfilter
+  ndp           = var.ct_fw.ndp
+  radv          = var.ct_fw.radv
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "ct_fw_rules" {
-  count = length(var.ct-fw-rules) > 0 || length(var.ct-fw-fsg) > 0 ? 1 : 0
+  count = length(var.ct_fw_rules) > 0 || length(var.ct_fw_fsg) > 0 ? 1 : 0
 
   node_name    = proxmox_virtual_environment_container.ct.node_name
   container_id = proxmox_virtual_environment_container.ct.vm_id
 
   dynamic "rule" {
-    for_each = var.ct-fw-rules
+    for_each = var.ct_fw_rules
 
     content {
       enabled = rule.value.enabled
@@ -206,7 +206,7 @@ resource "proxmox_virtual_environment_firewall_rules" "ct_fw_rules" {
   }
 
   dynamic "rule" {
-    for_each = var.ct-fw-fsg
+    for_each = var.ct_fw_fsg
 
     content {
       enabled        = rule.value.enabled
@@ -218,7 +218,7 @@ resource "proxmox_virtual_environment_firewall_rules" "ct_fw_rules" {
 }
 
 resource "time_sleep" "wait_for_ct" {
-  count           = var.ct-bootstrap-script == null ? 0 : 1
+  count           = var.ct_bootstrap_script == null ? 0 : 1
   create_duration = "10s"
   triggers = {
     vmid = proxmox_virtual_environment_container.ct.vm_id
@@ -229,16 +229,16 @@ resource "time_sleep" "wait_for_ct" {
 }
 
 resource "terraform_data" "bootstrap_ct" {
-  count = var.ct-bootstrap-script == null ? 0 : 1
+  count = var.ct_bootstrap_script == null ? 0 : 1
 
   connection {
     type        = "ssh"
     host        = replace(proxmox_virtual_environment_container.ct.initialization[0].ip_config[0].ipv4[0].address, "/24", "")
     user        = "root"
-    private_key = file(var.ct-ssh-privkey)
+    private_key = file(var.ct_ssh_privkey)
   }
   provisioner "remote-exec" {
-    script = var.ct-bootstrap-script
+    script = var.ct_bootstrap_script
   }
 
   triggers_replace = [
@@ -248,4 +248,11 @@ resource "terraform_data" "bootstrap_ct" {
   depends_on = [
     time_sleep.wait_for_ct
   ]
+
+  lifecycle {
+    precondition {
+      condition     = var.ct_ssh_privkey != null
+      error_message = "Bootstrap script cannot be executed without ssh private key."
+    }
+  }
 }
