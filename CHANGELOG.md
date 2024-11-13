@@ -47,3 +47,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updated
 
 - Added precondition to `bootstrap_ct` to check for ssh private key presence
+
+## [0.3.1] - 2024-11-13
+
+### Added
+
+- Test
+
+### Changed
+
+- Bumped minimum required terraform version to >=1.9
+- Split container OS precondition into more granular ones
+- added more bootstrap preconditions to avoid failures
+
+### Fixed
+
+- reference to undeclared variables due to HCL canonical form update

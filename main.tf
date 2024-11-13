@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.4"
+  required_version = ">= 1.9"
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
@@ -51,14 +51,14 @@ resource "proxmox_virtual_environment_container" "ct" {
   description   = "Managed by Terraform"
   node_name     = var.ct_node
   pool_id       = var.ct_pool
-  started       = var.ct_start.on-deploy
-  start_on_boot = var.ct_start.on-boot
+  started       = var.ct_start.on_deploy
+  start_on_boot = var.ct_start.on_boot
   protection    = var.ct_protection
 
   startup {
     order      = var.ct_start.order
-    up_delay   = var.ct_start.up-delay
-    down_delay = var.ct_start.down-delay
+    up_delay   = var.ct_start.up_delay
+    down_delay = var.ct_start.down_delay
   }
   unprivileged = var.ct_unprivileged
   vm_id        = var.ct_id
@@ -104,7 +104,7 @@ resource "proxmox_virtual_environment_container" "ct" {
 
   operating_system {
     template_file_id = var.ct_os != null ? var.ct_os : proxmox_virtual_environment_download_file.ct_template[0].id
-    type             = var.ct_os-type
+    type             = var.ct_os_type
   }
 
   console {
@@ -124,7 +124,7 @@ resource "proxmox_virtual_environment_container" "ct" {
       }
     }
     dynamic "ip_config" {
-      for_each = var.ct_net-ifaces
+      for_each = var.ct_net_ifaces
       content {
         ipv4 {
           address = ip_config.value.ipv4_addr
@@ -158,7 +158,11 @@ resource "proxmox_virtual_environment_container" "ct" {
 
   lifecycle {
     precondition {
-      condition     = (var.ct_os == null && var.ct_os_upload.source != null) || (var.ct_os_upload.source == null && var.ct_os != null)
+      condition     = var.ct_os != null || var.ct_os_upload.source != null
+      error_message = "At leaset one of 'ct_os' or 'ct_os_upload' must be set."
+    }
+    precondition {
+      condition     = var.ct_os == null || var.ct_os_upload.source == null
       error_message = "Variables 'ct_os' and 'ct_os_upload' are mutually exclusive!"
     }
   }
@@ -253,6 +257,14 @@ resource "terraform_data" "bootstrap_ct" {
     precondition {
       condition     = var.ct_ssh_privkey != null
       error_message = "Bootstrap script cannot be executed without ssh private key."
+    }
+    precondition {
+      condition     = var.ct_init.root_keys != null
+      error_message = "Bootstrap script cannot be executed without public ssh key."
+    }
+    precondition {
+      condition     = length(var.ct_net_ifaces) > 0
+      error_message = "Bootstrap script cannot be executed without a network interface or ipv4_addr."
     }
   }
 }

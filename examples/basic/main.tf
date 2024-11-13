@@ -7,14 +7,15 @@ terraform {
   }
 }
 
-provider "proxmox" {
-  insecure = true
-}
-
 module "ct_basic" {
   source = "../../"
 
-  ct-node = "my-pve-node"
-  ct-id   = 9999
-  ct-os   = "store:vztmpl/lxc-template.txz"
+  ct_node = "mypvenode"
+  ct_os   = "local:vztmpl/mylxctemplate"
+  ct_net_ifaces = {
+    eth0 = {
+      name      = "eth0"
+      ipv4_addr = "dhcp"
+    }
+  }
 }

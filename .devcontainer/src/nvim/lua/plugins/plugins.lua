@@ -32,4 +32,27 @@ return {
 			}
 		end,
 	},
+	{
+		"folke/snacks.nvim",
+		priority = 1000,
+		lazy = false,
+		---@type snacks.Config
+		opts = {
+			terminal = {
+				win = {
+					position = "top",
+					height = 0.25,
+				},
+			},
+		},
+		keys = {
+			{
+				"<C-S-/>",
+				function()
+					Snacks.terminal.toggle(nil, { win = { position = "float", height = 0.9, width = 0.9 } })
+				end,
+				desc = "Toggle Terminal",
+			},
+		},
+	},
 }

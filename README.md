@@ -5,7 +5,7 @@ Based on [bpg's provider](https://github.com/bpg/terraform-provider-proxmox)
 ## Create an LXC container on PVE using Terraform
 
 This module deploys an LXC container on ProxmoxVE host, with optional firewall configuration and LXC template download from URL.
-Most variables either have defaults or inherit defaults from provider configuration. For a quick deployment only `ct-node` and `ct-os` are required.
+Most variables either have defaults or inherit defaults from provider configuration. For a quick deployment only `ct_node` and `ct_os` are required.
 
 ## Requirements
 
