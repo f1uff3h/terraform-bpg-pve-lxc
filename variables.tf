@@ -242,8 +242,11 @@ variable "ct_ssh_privkey" {
   default     = null
 }
 
-variable "ct_bootstrap_script" {
-  type        = string
-  description = "Path to script file ro run on container creation."
-  default     = null
+variable "ct_bootstrap" {
+  type = map(object({
+    script_path = optional(string)
+    arguments   = optional(string)
+  }))
+  description = "List of paths to script files to be executed after container creation. Scripts will be executed in the order provided."
+  default     = {}
 }

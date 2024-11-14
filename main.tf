@@ -222,7 +222,7 @@ resource "proxmox_virtual_environment_firewall_rules" "ct_fw_rules" {
 }
 
 resource "time_sleep" "wait_for_ct" {
-  count           = var.ct_bootstrap_script == null ? 0 : 1
+  count           = length(var.ct_bootstrap) > 0 ? 1 : 0
   create_duration = "10s"
   triggers = {
     vmid = proxmox_virtual_environment_container.ct.vm_id
@@ -233,7 +233,7 @@ resource "time_sleep" "wait_for_ct" {
 }
 
 resource "terraform_data" "bootstrap_ct" {
-  count = var.ct_bootstrap_script == null ? 0 : 1
+  count = length(var.ct_bootstrap)
 
   connection {
     type        = "ssh"
@@ -241,8 +241,16 @@ resource "terraform_data" "bootstrap_ct" {
     user        = "root"
     private_key = file(var.ct_ssh_privkey)
   }
+  provisioner "file" {
+    source      = values(var.ct_bootstrap)[count.index].script_path
+    destination = "/tmp/bootstrap_script${count.index}.sh"
+  }
+
   provisioner "remote-exec" {
-    script = var.ct_bootstrap_script
+    inline = [
+      "chmod +x /tmp/bootstrap_script${count.index}.sh",
+      join(" ", compact(["/tmp/bootstrap_script${count.index}.sh", try(values(var.ct_bootstrap)[count.index].arguments, [""])])),
+    ]
   }
 
   triggers_replace = [
@@ -255,16 +263,24 @@ resource "terraform_data" "bootstrap_ct" {
 
   lifecycle {
     precondition {
-      condition     = var.ct_ssh_privkey != null
-      error_message = "Bootstrap script cannot be executed without ssh private key."
+      condition     = try(values(var.ct_bootstrap)[count.index].script_path, null) != null
+      error_message = "Bootstrap script cannot be executed without script path."
+    }
+    precondition {
+      condition     = length(var.ct_net_ifaces) > 0
+      error_message = "Bootstrap script cannot be executed without a network interface."
+    }
+    precondition {
+      condition     = try(values(var.ct_net_ifaces)[0].ipv4_addr, null) != null
+      error_message = "Bootstrap script cannot be executed without ipv4_addr."
     }
     precondition {
       condition     = var.ct_init.root_keys != null
       error_message = "Bootstrap script cannot be executed without public ssh key."
     }
     precondition {
-      condition     = length(var.ct_net_ifaces) > 0
-      error_message = "Bootstrap script cannot be executed without a network interface or ipv4_addr."
+      condition     = var.ct_ssh_privkey != null
+      error_message = "Bootstrap script cannot be executed without ssh private key."
     }
   }
 }

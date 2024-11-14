@@ -30,13 +30,66 @@ run "fail_ct_os_and_ct_os_upload" {
   ]
 }
 
+run "fail_bootstrap_no_script" {
+  command = plan
+
+  variables {
+    ct_bootstrap = {
+      script1 = {}
+    }
+    ct_ssh_privkey = "./test_key"
+    ct_init = {
+      root_keys = ["mock Key"]
+    }
+    ct_net_ifaces = {
+      eth0 = {
+        name = "eth0"
+        ipv4_addr = "38.0.101.76/24"
+      }
+    }
+  }
+
+  expect_failures = [
+    terraform_data.bootstrap_ct
+  ]
+}
+
 run "fail_bootstrap_no_iface" {
   command = plan
 
   variables {
-    ct_bootstrap_script = "my_script.sh"
+    ct_bootstrap = {
+      script1 = {
+        script_path = "my_script.sh"
+      }
+    }
     ct_ssh_privkey = "./test_key"
     ct_net_ifaces = {}
+  }
+
+  expect_failures = [
+    terraform_data.bootstrap_ct
+  ]
+}
+
+run "fail_bootstrap_no_ipv4" {
+  command = plan
+
+  variables {
+    ct_bootstrap = {
+      script1 = {
+        script_path = "my_script.sh"
+      }
+    }
+    ct_ssh_privkey = "./test_key"
+    ct_init = {
+      root_keys = ["mock Key"]
+    }
+    ct_net_ifaces = {
+      eth0 = {
+        name = "eth0"
+      }
+    }
   }
 
   expect_failures = [
@@ -48,8 +101,18 @@ run "fail_bootstrap_no_ssh_public_key" {
   command = plan
 
   variables {
-    ct_bootstrap_script = "my_script.sh"
+    ct_bootstrap = {
+      script1 = {
+        script_path = "my_script.sh"
+      }
+    }
     ct_ssh_privkey = "./test_key"
+    ct_net_ifaces = {
+      eth0 = {
+        name = "eth0"
+        ipv4_addr = "38.0.101.76/24"
+      }
+    }
   }
 
   expect_failures = [
@@ -61,10 +124,22 @@ run "fail_bootstrap_no_ssh_private_key" {
   command = plan
 
   variables {
-    ct_bootstrap_script = "my_script.sh"
-    ct_init = { root_keys = [
-      "./test_key.pub"
-    ] }
+    ct_bootstrap = {
+      script1 = {
+        script_path = "my_script.sh"
+      }
+    }
+    ct_init = {
+      root_keys = [
+        "./test_key.pub"
+      ]
+    }
+    ct_net_ifaces = {
+      eth0 = {
+        name = "eth0"
+        ipv4_addr = "38.0.101.76/24"
+      }
+    }
   }
 
   expect_failures = [
@@ -84,9 +159,13 @@ run "success_basic_build" {
 
 run "success_bootstrap_build" {
   # below variable required in environment
-  # TF_VAR_ct_net_ifaces = { eth0: { name = "eth0", ipv4_addr = "<ipv4/CIDR>", ipv4_gw = "<gateway_ip>" }
+  # TF_VAR_ct_net_ifaces = { eth0 = { name = "eth0", ipv4_addr = "<ipv4/CIDR>", ipv4_gw = "<gateway_ip>" }
   variables {
-    ct_bootstrap_script = "./examples/basic_bootstrap/bootstrap.sh"
+    ct_bootstrap = {
+      script1 = {
+        script_path = "./examples/basic_bootstrap/bootstrap.sh"
+      }
+    }
     ct_ssh_privkey = "./test_key"
     ct_disk = { datastore = "local-btrfs" }
     ct_init = {

@@ -63,3 +63,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - reference to undeclared variables due to HCL canonical form update
+
+## [0.4.0] - 2024-11-14
+
+### Added
+
+- capacity to run multiple scripts with arguments
+- precondition for `ct_net_ifaces` to have an `ipv4_addr` + tests
+
+### Changed
+
+- **BREAKING**: `ct_bootstrap_script` is now `ct_bootstrap` a map(object) to allow usage of multiple scripts
